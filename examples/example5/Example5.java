@@ -42,7 +42,7 @@ class Example5Gui  {
         upButton.addActionListener(listen);
         blank.addActionListener(listen);
 // Put the icon in the button.
-        up.setIcon(upButtonIcon);
+        upButton.setIcon(upButtonIcon);
         frame.setVisible(true);
     }
 
