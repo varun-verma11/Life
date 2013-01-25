@@ -17,6 +17,7 @@ public class Cell extends JButton
 	public Cell()
 	{
 		colour = Colour.GREY;
+		this.setBackground(Color.GRAY);
 	}
 
 	public boolean isDead()

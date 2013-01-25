@@ -1,13 +1,32 @@
 package life;
 
-import java.applet.*;
-import java.awt.*;
+import java.applet.Applet;
+import java.awt.BorderLayout;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
 
 public class Life extends Applet {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	public static final int DEFAULT_COLUMN_SIZE = 30;
+	public static final int DEFAULT_ROW_SIZE = 30;
+	private static final int MAX_SPEED = 10;
+	private static final int MIN_SPEED = 0;
+	private static final int DEFAULT_SPEED = 0;
+	JPanel grid; 
+	
+	public Life()
+	{
+		grid = new Grid();
+	}
 
 	// enum for managing the basic three colours of the cells
 	// RED and GREEN cells are alive, GREY cells are dead
@@ -18,7 +37,43 @@ public class Life extends Applet {
 	// called by the html page to draw the applet
 	public void paint(Graphics g) {
 		// draw the applet
-		g.drawString("ToDo: write a Life applet and a nice webpage", 25, 50);
+		grid.setLayout(new GridLayout(DEFAULT_ROW_SIZE, DEFAULT_COLUMN_SIZE));
+		((Grid) grid).addCellsToPanel();
+		
+		
+		JSlider speed_slider = new JSlider(JSlider.VERTICAL,
+               MIN_SPEED, MAX_SPEED, DEFAULT_SPEED);
+		speed_slider.setMajorTickSpacing(2);
+		speed_slider.setMinorTickSpacing(1);
+		speed_slider.setPaintTicks(true);
+		speed_slider.setPaintLabels(true);
+		
+		JFrame frame = new JFrame();
+		frame.setLocationRelativeTo(null);
+		frame.setTitle("Game of Life");
+		
+		frame.getContentPane().add(grid, BorderLayout.CENTER);
+		frame.getContentPane().add(speed_slider, BorderLayout.EAST);
+		
+		JPanel header = new JPanel();
+		JLabel turns = new JLabel("Turns: 0");
+		header.add(turns,BorderLayout.CENTER);
+		frame.getContentPane().add(header, BorderLayout.NORTH);
+		
+		JPanel buttons_footer = new JPanel();
+		JButton clear = new JButton("Clear");
+		JButton step = new JButton("Step");
+		JButton run = new JButton("Run");
+		buttons_footer.add(clear, BorderLayout.WEST);
+		buttons_footer.add(step, BorderLayout.CENTER);
+		buttons_footer.add(run, BorderLayout.EAST);
+		frame.getContentPane().add(buttons_footer, BorderLayout.SOUTH);
+		
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setSize(500,500);
+		frame.setVisible(true);
+		
+		//g.drawString("ToDo: write a Life applet and a nice webpage", 25, 50);
 	}
 
 	/*
@@ -43,7 +98,7 @@ public class Life extends Applet {
 
 	}
 
-	// create a live sell with the specified colour at coord (x,y)
+	// create a live cell with the specified colour at coord (x,y)
 	public void resurrect(int x, int y, Colour c) {
 
 	}
@@ -58,5 +113,6 @@ public class Life extends Applet {
 	public void step() {
 
 	}
-
+	
+	
 }
