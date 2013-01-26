@@ -1,8 +1,11 @@
 package life;
 
 import java.awt.Color;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JButton;
+import javax.swing.SwingUtilities;
 
 import life.Life.Colour;
 
@@ -12,12 +15,13 @@ public class Cell extends JButton
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	Colour colour;
+	private Colour colour;
 
 	public Cell()
 	{
 		colour = Colour.GREY;
 		this.setBackground(Color.GRAY);
+		this.addMouseListener(new CellMouseListener());
 	}
 
 	public boolean isDead()
@@ -48,5 +52,25 @@ public class Cell extends JButton
 	public Colour getColour()
 	{
 		return colour;
+	}
+
+	private class CellMouseListener extends MouseAdapter
+	{
+		@Override
+		public void mouseClicked(MouseEvent event)
+		{
+			final Cell cell = (Cell) event.getSource();
+			if (SwingUtilities.isLeftMouseButton(event))
+			{
+				cell.setColour(Colour.RED);
+			} else if (SwingUtilities.isRightMouseButton(event))
+			{
+				cell.setColour(Colour.GREEN);
+			} else if (SwingUtilities.isMiddleMouseButton(event))
+			{
+				cell.setColour(Colour.GREY);
+			}
+
+		}
 	}
 }
