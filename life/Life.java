@@ -133,7 +133,7 @@ public class Life extends JApplet
 	public void run()
 	{
 		display.disable_controls_for_running();
-		while (!pause || !isGameFinished())
+		while (!pause && !isGameFinished())
 		{
 			step();
 			try
@@ -151,10 +151,10 @@ public class Life extends JApplet
 	private int numberOfLiveNeigbours(int row, int column, Grid current_grid)
 	{
 		int count = 0;
-		int[] columns = { (column - 1) % (DEFAULT_COLUMN_SIZE-1), column,
-				(column + 1) % (DEFAULT_COLUMN_SIZE-1) };
-		int[] rows = { (row - 1) % (DEFAULT_ROW_SIZE-1), row,
-				(row + 1) % (DEFAULT_ROW_SIZE-1) };
+		int[] columns = { (column == 0) ? DEFAULT_COLUMN_SIZE - 1 : column,
+				column, (column + 1) % (DEFAULT_COLUMN_SIZE - 1) };
+		int[] rows = { (row == 0) ? DEFAULT_ROW_SIZE - 1 : row, row,
+				(row + 1) % (DEFAULT_ROW_SIZE - 1) };
 		for (int r : rows)
 		{
 			for (int c : columns)
@@ -168,10 +168,10 @@ public class Life extends JApplet
 
 	private Colour get_birth_colour(int row, int column, Grid current_grid)
 	{
-		int[] columns = { (column - 1) % (DEFAULT_COLUMN_SIZE-1), column,
-				(column + 1) % (DEFAULT_COLUMN_SIZE-1) };
-		int[] rows = { (row - 1) % (DEFAULT_ROW_SIZE-1), row,
-				(row + 1) % (DEFAULT_ROW_SIZE-1) };
+		int[] columns = { (column == 0) ? DEFAULT_COLUMN_SIZE - 1 : column,
+				column, (column + 1) % (DEFAULT_COLUMN_SIZE - 1) };
+		int[] rows = { (row == 0) ? DEFAULT_ROW_SIZE - 1 : row, row,
+				(row + 1) % (DEFAULT_ROW_SIZE - 1) };
 		int green = 0;
 		int red = 0;
 
@@ -179,12 +179,10 @@ public class Life extends JApplet
 		{
 			for (int c : columns)
 			{
-				if (current_grid.getCellAtPosition(r, c).getColour() == 
-						Colour.RED)
+				if (current_grid.getCellAtPosition(r, c).getColour() == Colour.RED)
 				{
 					red++;
-				} else if (current_grid.getCellAtPosition(r, c).getColour() == 
-						Colour.GREEN)
+				} else if (current_grid.getCellAtPosition(r, c).getColour() == Colour.GREEN)
 				{
 					green++;
 				}
