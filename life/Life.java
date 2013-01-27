@@ -1,14 +1,9 @@
 package life;
 
-import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 
 import javax.swing.JApplet;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JSlider;
 
 public class Life extends JApplet
 {
@@ -18,18 +13,22 @@ public class Life extends JApplet
 	private static final long serialVersionUID = 1L;
 	public static final int DEFAULT_COLUMN_SIZE = 30;
 	public static final int DEFAULT_ROW_SIZE = 30;
-	private static final int MAX_SPEED = 10;
-	private static final int MIN_SPEED = 0;
-	private static final int DEFAULT_SPEED = 0;
 	private static final Colour dead_colour = Colour.GREY;
 	private static int speed = 0;
-	private JLabel turn_label;
 	private Grid grid;
 	private int number_of_turns = 0;
+	private Display display;
+	private boolean pause = false;
 
 	public Life()
 	{
 		grid = new Grid();
+		display = new Display(this);
+	}
+
+	public void set_pause(boolean bool)
+	{
+		pause = bool;
 	}
 
 	// enum for managing the basic three colours of the cells
@@ -42,36 +41,8 @@ public class Life extends JApplet
 	// called by the html page to draw the applet
 	public void paint(Graphics g)
 	{
-		// draw the applet
 		grid.setLayout(new GridLayout(DEFAULT_ROW_SIZE, DEFAULT_COLUMN_SIZE));
-		Display display = new Display(this);
-
-//		JFrame frame = new JFrame();
-//		frame.setLocationRelativeTo(null);
-//		frame.setTitle("Game of Life");
-
-		JSlider speed_slider = new JSlider(JSlider.VERTICAL, MIN_SPEED,
-				MAX_SPEED, DEFAULT_SPEED);
-		display.initialise_speed_slider(speed_slider);
-		this.getContentPane().add(speed_slider, BorderLayout.EAST);
-
-		this.getContentPane().add(grid, BorderLayout.CENTER);
-
-		JPanel header = new JPanel();
-		turn_label = new JLabel("Turns: " + this.number_of_turns);
-		
-		header.add(turn_label, BorderLayout.CENTER);
-		this.getContentPane().add(header, BorderLayout.NORTH);
-
-		JPanel buttons_footer = new JPanel();
-		display.add_buttons_to_panel(buttons_footer);
-		this.getContentPane().add(buttons_footer, BorderLayout.SOUTH);
-
-//		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//		frame.setSize(500, 500);
-//		frame.setVisible(true);
-
-		// g.drawString("ToDo: write a Life applet and a nice webpage", 25, 50);
+		display.initialise_display();
 	}
 
 	/*
@@ -132,7 +103,7 @@ public class Life extends JApplet
 	public void step()
 	{
 		number_of_turns++;
-		turn_label.setText("Turns: " + number_of_turns);
+		display.update_turn_label(number_of_turns);
 		// update turns on the frame
 		Grid previous = grid.clone();
 		for (int r = 0; r < Life.DEFAULT_ROW_SIZE; r++)
@@ -145,9 +116,7 @@ public class Life extends JApplet
 				{
 					if (number_of_live_neighbours == 3)
 					{
-						// need to get the colour here
-						// for now set to RED
-						resurrect(r, c, Colour.RED);
+						resurrect(r, c, get_birth_colour(r, c, previous));
 					}
 				} else
 				{
@@ -163,7 +132,8 @@ public class Life extends JApplet
 
 	public void run()
 	{
-		while(!isGameFinished())
+		display.disable_controls_for_running();
+		while (!pause || !isGameFinished())
 		{
 			step();
 			try
@@ -175,27 +145,53 @@ public class Life extends JApplet
 				break;
 			}
 		}
-		System.out.println(number_of_turns);
+		display.enable_controls_after_running();
 	}
 
 	private int numberOfLiveNeigbours(int row, int column, Grid current_grid)
 	{
 		int count = 0;
-		int start_row = (row > 0) ? row - 1 : row;
-		int end_row = (row < DEFAULT_ROW_SIZE - 1) ? row + 1 : row;
-		int start_column = (column < 0) ? column - 1 : column;
-		int end_column = (row < DEFAULT_COLUMN_SIZE - 1) ? column + 1
-				: column;
-
-		for (int r = start_row; r < end_row; r++)
+		int[] columns = { (column - 1) % (DEFAULT_COLUMN_SIZE-1), column,
+				(column + 1) % (DEFAULT_COLUMN_SIZE-1) };
+		int[] rows = { (row - 1) % (DEFAULT_ROW_SIZE-1), row,
+				(row + 1) % (DEFAULT_ROW_SIZE-1) };
+		for (int r : rows)
 		{
-			for (int c = start_column; c < end_column; c++)
+			for (int c : columns)
 			{
 				if (!current_grid.getCellAtPosition(r, c).isDead())
 					count++;
 			}
 		}
 		return count;
+	}
+
+	private Colour get_birth_colour(int row, int column, Grid current_grid)
+	{
+		int[] columns = { (column - 1) % (DEFAULT_COLUMN_SIZE-1), column,
+				(column + 1) % (DEFAULT_COLUMN_SIZE-1) };
+		int[] rows = { (row - 1) % (DEFAULT_ROW_SIZE-1), row,
+				(row + 1) % (DEFAULT_ROW_SIZE-1) };
+		int green = 0;
+		int red = 0;
+
+		for (int r : rows)
+		{
+			for (int c : columns)
+			{
+				if (current_grid.getCellAtPosition(r, c).getColour() == 
+						Colour.RED)
+				{
+					red++;
+				} else if (current_grid.getCellAtPosition(r, c).getColour() == 
+						Colour.GREEN)
+				{
+					green++;
+				}
+			}
+		}
+
+		return (green > red) ? Colour.GREEN : Colour.RED;
 	}
 
 	private boolean isGameFinished()
@@ -211,6 +207,11 @@ public class Life extends JApplet
 			}
 		}
 		return true;
+	}
+
+	public Grid get_grid()
+	{
+		return grid;
 	}
 
 }
