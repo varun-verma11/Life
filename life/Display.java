@@ -1,15 +1,22 @@
 package life;
 
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+
+import life.Life.Colour;
 
 public class Display
 {
@@ -20,13 +27,17 @@ public class Display
 	private Life life_game;
 	private JLabel turn_label;
 	private JSlider speed_slider;
-	JButton clear;
-	JButton step;
-	JButton run;
+	private JButton clear;
+	private JButton step;
+	private JButton run;
+	private JComboBox<String> saved_patterns;
+	private String[] patterns_name = { "Block", "Beehive", "Loaf", "Boat",
+			"Blinker", "Toad", "Beacon", "Pulsar", "Glider", "Lightweight" };
 
 	public Display(Life life_game)
 	{
 		this.life_game = life_game;
+
 	}
 
 	public void initialise_display()
@@ -39,6 +50,8 @@ public class Display
 
 		JPanel header = new JPanel();
 		add_turn_label(header);
+		add_drop_down_for_patterns();
+		header.add(saved_patterns, BorderLayout.EAST);
 		life_game.getContentPane().add(header, BorderLayout.NORTH);
 
 		JPanel buttons_footer = new JPanel();
@@ -60,7 +73,7 @@ public class Display
 	public void add_turn_label(JPanel header)
 	{
 		turn_label = new JLabel("Turns: 0");
-		header.add(turn_label, BorderLayout.CENTER);
+		header.add(turn_label, BorderLayout.WEST);
 	}
 
 	public void update_turn_label(int number_of_turns)
@@ -138,7 +151,13 @@ public class Display
 		step.disable();
 		life_game.get_grid().disable();
 	}
-	
+
+	private void add_drop_down_for_patterns()
+	{
+		saved_patterns = new JComboBox<String>(patterns_name);
+		saved_patterns.addActionListener(new PatternSelecterActionListener());
+	}
+
 	public void change_run_button(String text)
 	{
 		run.setText(text);
@@ -151,5 +170,48 @@ public class Display
 		clear.enable();
 		step.enable();
 		life_game.get_grid().enable();
+	}
+
+	private class PatternSelecterActionListener implements ActionListener
+	{
+		public void actionPerformed(final ActionEvent event)
+		{
+			@SuppressWarnings("unchecked")
+			final JComboBox<String> source = (JComboBox<String>) event
+					.getSource();
+			String filepath = (String) source.getSelectedItem() + ".txt";
+			Grid grid = new Grid();
+			grid.setLayout(new GridLayout(Life.DEFAULT_ROW_SIZE,
+					Life.DEFAULT_COLUMN_SIZE));
+			try
+			{
+				Scanner scanner = new Scanner(new File(filepath));
+				for (int r = 0; r < Life.DEFAULT_ROW_SIZE; r++)
+				{
+					String[] row = scanner.nextLine().split(" ");
+					for (int c = 0; c < Life.DEFAULT_COLUMN_SIZE; c++)
+					{
+						grid.getCellAtPosition(r, c).setColour(
+								map_string_to_colour(row[c]));
+					}
+				}
+				scanner.close();
+			} catch (FileNotFoundException e)
+			{
+				e.printStackTrace();
+			}
+		}
+
+		private Colour map_string_to_colour(String string)
+		{
+			try
+			{
+				Integer ord = Integer.parseInt(string);
+				return Life.Colour.values()[ord];
+			} catch (NumberFormatException e)
+			{
+				return null;
+			}
+		}
 	}
 }

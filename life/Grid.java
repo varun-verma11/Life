@@ -27,11 +27,6 @@ public class Grid extends JPanel implements Cloneable
 		return grid[r][c];
 	}
 	
-	private void add_drop_down_for_patterns()
-	{
-		
-	}
-	
 	@Override
 	public Grid clone()
 	{
