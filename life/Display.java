@@ -4,13 +4,18 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Scanner;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
@@ -30,9 +35,10 @@ public class Display
 	private JButton clear;
 	private JButton step;
 	private JButton run;
+	private JButton save_pattern;
 	private JComboBox<String> saved_patterns;
-	private String[] patterns_name = { "Block", "Beehive", "Loaf", "Boat",
-			"Blinker", "Toad", "Beacon", "Pulsar", "Glider", "Lightweight" };
+
+	private String[] patterns_name = { };
 
 	public Display(Life life_game)
 	{
@@ -50,8 +56,12 @@ public class Display
 
 		JPanel header = new JPanel();
 		add_turn_label(header);
-		add_drop_down_for_patterns();
-		header.add(saved_patterns, BorderLayout.EAST);
+//		add_drop_down_for_patterns();
+//		JPanel patterns_panel = new JPanel();
+//		patterns_panel.add(new JLabel("Patterns"), BorderLayout.WEST);
+//		patterns_panel.add(saved_patterns, BorderLayout.EAST);
+//
+//		header.add(patterns_panel, BorderLayout.EAST);
 		life_game.getContentPane().add(header, BorderLayout.NORTH);
 
 		JPanel buttons_footer = new JPanel();
@@ -86,6 +96,7 @@ public class Display
 		clear = new JButton("Clear");
 		step = new JButton("Step");
 		run = new JButton("Run");
+		save_pattern = new JButton("Save Grid");
 		buttons_footer.add(clear, BorderLayout.WEST);
 		buttons_footer.add(step, BorderLayout.CENTER);
 		buttons_footer.add(run, BorderLayout.EAST);
@@ -93,6 +104,36 @@ public class Display
 		clear.addActionListener(buttonListener);
 		step.addActionListener(buttonListener);
 		run.addActionListener(buttonListener);
+		buttons_footer.add(save_pattern, BorderLayout.EAST);
+		save_pattern.addActionListener(new ActionListener()
+		{
+			public void actionPerformed(ActionEvent e)
+			{
+				String s = (String) JOptionPane.showInputDialog(
+						"Please enter the name of the pattern.", "");
+				if (s != null && s.length() > 0)
+				{
+					save_name_of_pattern(s);
+					life_game.get_grid().saveToFile(s);
+				}
+			}
+
+			private void save_name_of_pattern(String s)
+			{
+				PrintWriter out;
+				try
+				{
+					out = new PrintWriter(new BufferedWriter(new FileWriter(
+							new java.io.File("../.").getCanonicalPath()
+									.toString() + "/pattern_names.txt", true)));
+					out.print(" " + s);
+					out.close();
+				} catch (IOException e)
+				{
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 
 	@SuppressWarnings("deprecation")
@@ -154,6 +195,21 @@ public class Display
 
 	private void add_drop_down_for_patterns()
 	{
+		try
+		{
+			Scanner scanner = new Scanner(new File(new java.io.File("../.")
+					.getCanonicalPath().toString() + "/pattern_names.txt"));
+			patterns_name = scanner.nextLine().split(" ");
+			saved_patterns = new JComboBox<String>(patterns_name);
+			scanner.close();
+		} catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
+		} catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		saved_patterns = new JComboBox<String>(patterns_name);
 		saved_patterns.addActionListener(new PatternSelecterActionListener());
 	}
@@ -179,13 +235,18 @@ public class Display
 			@SuppressWarnings("unchecked")
 			final JComboBox<String> source = (JComboBox<String>) event
 					.getSource();
+			if (((String) source.getSelectedItem()).equals(patterns_name[0]))
+			{
+				return;
+			}
 			String filepath = (String) source.getSelectedItem() + ".txt";
 			Grid grid = new Grid();
 			grid.setLayout(new GridLayout(Life.DEFAULT_ROW_SIZE,
 					Life.DEFAULT_COLUMN_SIZE));
 			try
 			{
-				Scanner scanner = new Scanner(new File(filepath));
+				Scanner scanner = new Scanner(new File(new java.io.File("../.")
+						.getCanonicalPath().toString() +"/patterns/" + filepath));
 				for (int r = 0; r < Life.DEFAULT_ROW_SIZE; r++)
 				{
 					String[] row = scanner.nextLine().split(" ");
@@ -196,7 +257,7 @@ public class Display
 					}
 				}
 				scanner.close();
-			} catch (FileNotFoundException e)
+			} catch (IOException e)
 			{
 				e.printStackTrace();
 			}

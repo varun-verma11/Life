@@ -2,8 +2,11 @@ package life;
 
 import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JApplet;
+import javax.swing.Timer;
 
 public class Life extends JApplet
 {
@@ -18,7 +21,7 @@ public class Life extends JApplet
 	private Grid grid;
 	private int number_of_turns = 0;
 	private Display display;
-	private boolean pause = false;
+	private boolean paused = false;
 
 	public Life()
 	{
@@ -28,7 +31,7 @@ public class Life extends JApplet
 
 	public void set_pause(boolean bool)
 	{
-		pause = bool;
+		paused = bool;
 	}
 
 	// enum for managing the basic three colours of the cells
@@ -128,24 +131,36 @@ public class Life extends JApplet
 			}
 
 		}
+		
+		if (isGameFinished())
+		{
+			number_of_turns=0;
+			display.update_turn_label(number_of_turns);
+		}
 	}
 
 	public void run()
 	{
 		display.disable_controls_for_running();
-		while (!pause && !isGameFinished())
+		Timer timer = new Timer(speed, new ActionListener()
 		{
-			step();
-			try
+			@Override
+			public void actionPerformed(ActionEvent event)
 			{
-				Thread.sleep(speed);
-			} catch (InterruptedException e)
-			{
-				e.printStackTrace();
-				break;
+				Timer timer = (Timer) event.getSource();
+				timer.setDelay(speed);
+				if (!paused && !isGameFinished())
+				{
+					
+					step();
+				} else
+				{
+					display.enable_controls_after_running();
+					timer.stop();
+				}
 			}
-		}
-		display.enable_controls_after_running();
+		});
+		timer.start();
 	}
 
 	private int numberOfLiveNeigbours(int row, int column, Grid current_grid)
