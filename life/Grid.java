@@ -47,6 +47,8 @@ public class Grid extends JPanel implements Cloneable
 	 */
 	public Cell getCellAtPosition(int r, int c)
 	{
+		r = ((r%Life.DEFAULT_ROW_SIZE)+Life.DEFAULT_ROW_SIZE)%Life.DEFAULT_ROW_SIZE;
+		c = ((c%Life.DEFAULT_COLUMN_SIZE)+Life.DEFAULT_COLUMN_SIZE)%Life.DEFAULT_COLUMN_SIZE;
 		return grid[r][c];
 	}
 

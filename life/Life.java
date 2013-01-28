@@ -123,7 +123,8 @@ public class Life extends JApplet
 					}
 				} else
 				{
-					if (number_of_live_neighbours != 2)
+					if (number_of_live_neighbours < 2
+							|| number_of_live_neighbours > 3)
 					{
 						kill(r, c);
 					}
@@ -166,22 +167,31 @@ public class Life extends JApplet
 	private int numberOfLiveNeigbours(int row, int column, Grid current_grid)
 	{
 		int count = 0;
-		int[] columns = { (column == 0) ? DEFAULT_COLUMN_SIZE - 1 : column-1,
-				column, (column + 1) % (DEFAULT_COLUMN_SIZE - 1) };
-		int[] rows = { (row == 0) ? DEFAULT_ROW_SIZE - 1 : row-1, row,
-				(row + 1) % (DEFAULT_ROW_SIZE - 1) };
-		
-		for (int r=0; r<rows.length; r++)
+		for (int r = -1; r <= 1; r++)
 		{
-			for (int c=0; c<columns.length; c++)
+			for (int c = -1; c <= 1; c++)
 			{
-				if (!(r==1 && c==1) && !current_grid.getCellAtPosition(rows[r], columns[c]).isDead())
+				if (!(r == 0 && c == 0)
+						&& !current_grid.getCellAtPosition(row + r, column + c)
+								.isDead())
 				{
 					count++;
 				}
 			}
 		}
 		return count;
+
+		/*
+		 * int count = 0; int[] columns = { (column == 0) ? DEFAULT_COLUMN_SIZE
+		 * - 1 : column-1, column, (column + 1) % (DEFAULT_COLUMN_SIZE - 1) };
+		 * int[] rows = { (row == 0) ? DEFAULT_ROW_SIZE - 1 : row-1, row, (row +
+		 * 1) % (DEFAULT_ROW_SIZE - 1) };
+		 * 
+		 * for (int r=0; r<rows.length; r++) { for (int c=0; c<columns.length;
+		 * c++) { if (!(r==1 && c==1) &&
+		 * !current_grid.getCellAtPosition(rows[r], columns[c]).isDead()) {
+		 * count++; } } } return count;
+		 */
 	}
 
 	private Colour get_birth_colour(int row, int column, Grid current_grid)
