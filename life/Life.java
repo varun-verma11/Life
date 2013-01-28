@@ -17,7 +17,7 @@ public class Life extends JApplet
 	public static final int DEFAULT_COLUMN_SIZE = 30;
 	public static final int DEFAULT_ROW_SIZE = 30;
 	private static final Colour dead_colour = Colour.GREY;
-	private static int speed = 0;
+	private static int speed = 2000;
 	private Grid grid;
 	private int number_of_turns = 0;
 	private Display display;
@@ -131,10 +131,10 @@ public class Life extends JApplet
 			}
 
 		}
-		
+
 		if (isGameFinished())
 		{
-			number_of_turns=0;
+			number_of_turns = 0;
 			display.update_turn_label(number_of_turns);
 		}
 	}
@@ -151,7 +151,7 @@ public class Life extends JApplet
 				timer.setDelay(speed);
 				if (!paused && !isGameFinished())
 				{
-					
+
 					step();
 				} else
 				{
@@ -166,16 +166,19 @@ public class Life extends JApplet
 	private int numberOfLiveNeigbours(int row, int column, Grid current_grid)
 	{
 		int count = 0;
-		int[] columns = { (column == 0) ? DEFAULT_COLUMN_SIZE - 1 : column,
+		int[] columns = { (column == 0) ? DEFAULT_COLUMN_SIZE - 1 : column-1,
 				column, (column + 1) % (DEFAULT_COLUMN_SIZE - 1) };
-		int[] rows = { (row == 0) ? DEFAULT_ROW_SIZE - 1 : row, row,
+		int[] rows = { (row == 0) ? DEFAULT_ROW_SIZE - 1 : row-1, row,
 				(row + 1) % (DEFAULT_ROW_SIZE - 1) };
-		for (int r : rows)
+		
+		for (int r=0; r<rows.length; r++)
 		{
-			for (int c : columns)
+			for (int c=0; c<columns.length; c++)
 			{
-				if (!current_grid.getCellAtPosition(r, c).isDead())
+				if (!(r==1 && c==1) && !current_grid.getCellAtPosition(rows[r], columns[c]).isDead())
+				{
 					count++;
+				}
 			}
 		}
 		return count;

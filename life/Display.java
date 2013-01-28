@@ -34,8 +34,8 @@ public class Display
 	 * used for the speed slider.
 	 */
 	private static final int MAX_SPEED = 10;
-	private static final int MIN_SPEED = 0;
-	private static final int DEFAULT_SPEED = 0;
+	private static final int MIN_SPEED = 1;
+	private static final int DEFAULT_SPEED = 1;
 
 	/**
 	 * The field life_game is a reference to the game for which this display
@@ -130,8 +130,7 @@ public class Display
 	private void initialise_speed_slider()
 	{
 		speed_slider = new JSlider(JSlider.VERTICAL, MIN_SPEED, MAX_SPEED, DEFAULT_SPEED);
-		speed_slider.setMajorTickSpacing(2);
-		speed_slider.setMinorTickSpacing(1);
+		speed_slider.setMajorTickSpacing(1);
 		speed_slider.setPaintTicks(true);
 		speed_slider.setPaintLabels(true);
 		speed_slider.addChangeListener(new ChangeListener()
@@ -187,20 +186,39 @@ public class Display
 		run.addActionListener(buttonListener);
 	}
 
+	/**
+	 * This method is used to disable the speed slider
+	 */
 	@SuppressWarnings("deprecation")
 	public void disable_slider()
 	{
 		speed_slider.disable();
 	}
 
+	/**
+	 * This method is used to enable the speed slider
+	 */
 	@SuppressWarnings("deprecation")
 	public void enable_slider()
 	{
 		speed_slider.enable();
 	}
 
+	/**
+	 * The class ButtonListener is used for ActionListener for the the function
+	 * buttons clear, run and step. Each button uses single instance of this
+	 * class
+	 * 
+	 * @author varun
+	 *
+	 */
 	private class ButtonListener implements ActionListener
 	{
+		/**
+		 * This function is called when any of the buttons on the applet are
+		 * clicked. The method uses the text from the button to perform
+		 * a specific action
+		 */
 		public void actionPerformed(final ActionEvent event)
 		{
 			final JButton source = (JButton) event.getSource();
@@ -223,14 +241,22 @@ public class Display
 		}
 	}
 
+	/**
+	 * This method disables all the controls while the game of life is running.
+	 */
 	@SuppressWarnings("deprecation")
 	public void disable_controls_for_running()
 	{
 		clear.disable();
 		step.disable();
 		life_game.get_grid().disable();
+		life_game.get_grid().disable();
 	}
 
+	/**
+	 * This method adds a drop down menu for the patterns which are saved
+	 * already.
+	 */
 	private void add_drop_down_for_patterns()
 	{
 		try
@@ -242,6 +268,11 @@ public class Display
 			saved_patterns = new JComboBox<String>(patterns_name);
 			saved_patterns.addActionListener(new ActionListener()
 			{
+				/**
+				 * This method loads the pattern on the current grid. It loads
+				 * the file from the server on which this applet is currently 
+				 * being run.
+				 */
 				@Override
 				public void actionPerformed(ActionEvent event)
 				{
@@ -281,6 +312,15 @@ public class Display
 
 				}
 
+				/**
+				 * This method maps a string to a colour. It is a helper method 
+				 * for loading the grid. The string passed in integer value of 
+				 * the ordinal value. 
+				 * 
+				 * @param string : specifies the ordinal value as a string for 
+				 * the colour
+				 * @return : returns a colour mapping for the given string
+				 */
 				private Colour map_string_to_colour(String string)
 				{
 					try
@@ -305,6 +345,10 @@ public class Display
 
 	}
 
+	/**
+	 * This method is used to set the text of the given 
+	 * @param text
+	 */
 	public void change_run_button(String text)
 	{
 		run.setText(text);
@@ -315,6 +359,7 @@ public class Display
 	{
 		change_run_button("Run");
 		clear.enable();
+		life_game.get_grid().enable();
 		step.enable();
 		life_game.get_grid().enable();
 	}
