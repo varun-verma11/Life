@@ -1,9 +1,5 @@
 package life;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-
 import javax.swing.JPanel;
 
 public class Grid extends JPanel implements Cloneable
@@ -45,22 +41,6 @@ public class Grid extends JPanel implements Cloneable
 			}
 		}
 		return game;
-	}
-
-	public void saveToFile(String filename)
-	{
-		try
-		{
-			BufferedWriter writer = new BufferedWriter(new FileWriter(
-					new java.io.File("../.")
-					.getCanonicalPath().toString()
-					+"/patterns/" + filename + ".txt"));
-			writer.write(this.toString());
-			writer.close();
-		} catch (IOException e)
-		{
-			e.printStackTrace();
-		}
 	}
 
 	@Override
