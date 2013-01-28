@@ -29,6 +29,12 @@ public class Life extends JApplet
 		display = new Display(this);
 	}
 
+	/**
+	 * This method updates the pause field in this class.
+	 * 
+	 * @param bool
+	 *            : specifies the new value for pause
+	 */
 	public void set_pause(boolean bool)
 	{
 		paused = bool;
@@ -58,23 +64,25 @@ public class Life extends JApplet
 	// read the colour of the cell at coord (x,y)
 	public Colour readCell(int x, int y)
 	{
-		return grid.getCellAtPosition(x, y).getColour();
+		return grid.getCellAtPosition(DEFAULT_ROW_SIZE - x, y).getColour();
 	}
 
+	/**
+	 * This method is used to update the speed of the running. i.e. the amount
+	 * of gap between each step when run is invoked.
+	 * 
+	 * @param speed
+	 *            : specifies the new speed
+	 */
 	public static void set_speed(int speed)
 	{
-		Life.speed = speed;
-	}
-
-	public static int get_speed()
-	{
-		return Life.speed;
+		Life.speed = 2000 / speed;
 	}
 
 	// read the turn count
 	public int readTurn()
 	{
-		return 0;
+		return number_of_turns;
 	}
 
 	// kill the cell at coord (x,y)
@@ -140,6 +148,10 @@ public class Life extends JApplet
 		}
 	}
 
+	/**
+	 * This method runs the simulation. It uses a timer and invokes the step
+	 * method at the defined speed.
+	 */
 	public void run()
 	{
 		display.disable_controls_for_running();
@@ -164,6 +176,19 @@ public class Life extends JApplet
 		timer.start();
 	}
 
+	/**
+	 * This method returns the number of live neighbours cell at given position
+	 * has.
+	 * 
+	 * @param row
+	 *            : specifies the row for the given cell
+	 * @param column
+	 *            : specifies the column for the given cell
+	 * @param current_grid
+	 *            : specifies the current grid to use while calculating number
+	 *            of live neighbours
+	 * @return
+	 */
 	private int numberOfLiveNeigbours(int row, int column, Grid current_grid)
 	{
 		int count = 0;
@@ -180,39 +205,41 @@ public class Life extends JApplet
 			}
 		}
 		return count;
-
-		/*
-		 * int count = 0; int[] columns = { (column == 0) ? DEFAULT_COLUMN_SIZE
-		 * - 1 : column-1, column, (column + 1) % (DEFAULT_COLUMN_SIZE - 1) };
-		 * int[] rows = { (row == 0) ? DEFAULT_ROW_SIZE - 1 : row-1, row, (row +
-		 * 1) % (DEFAULT_ROW_SIZE - 1) };
-		 * 
-		 * for (int r=0; r<rows.length; r++) { for (int c=0; c<columns.length;
-		 * c++) { if (!(r==1 && c==1) &&
-		 * !current_grid.getCellAtPosition(rows[r], columns[c]).isDead()) {
-		 * count++; } } } return count;
-		 */
 	}
 
+	/**
+	 * This method returns the colour which has more cells in the neighbours of
+	 * cell at given location
+	 * 
+	 * @param row
+	 *            : specifies the row number for the cell
+	 * @param column
+	 *            : specifies the column number for the cell
+	 * @param current_grid
+	 *            : specifies the current grid to look at
+	 * @return : returns Colour.RED iff more neighbours with Colour.Red nearby
+	 *         and Colour.GREEN otherwise
+	 */
 	private Colour get_birth_colour(int row, int column, Grid current_grid)
 	{
-		int[] columns = { (column == 0) ? DEFAULT_COLUMN_SIZE - 1 : column,
-				column, (column + 1) % (DEFAULT_COLUMN_SIZE - 1) };
-		int[] rows = { (row == 0) ? DEFAULT_ROW_SIZE - 1 : row, row,
-				(row + 1) % (DEFAULT_ROW_SIZE - 1) };
 		int green = 0;
 		int red = 0;
 
-		for (int r : rows)
+		for (int r = -1; r <= 1; r++)
 		{
-			for (int c : columns)
+			for (int c = -1; c <= 1; c++)
 			{
-				if (current_grid.getCellAtPosition(r, c).getColour() == Colour.RED)
+				if (!(r == 0 && c == 0))
 				{
-					red++;
-				} else if (current_grid.getCellAtPosition(r, c).getColour() == Colour.GREEN)
-				{
-					green++;
+					Colour cell_colour = current_grid.getCellAtPosition(
+							row + r, column + c).getColour();
+					if (cell_colour == Colour.RED)
+					{
+						red++;
+					} else if (cell_colour == Colour.GREEN)
+					{
+						green++;
+					}
 				}
 			}
 		}
@@ -220,6 +247,10 @@ public class Life extends JApplet
 		return (green > red) ? Colour.GREEN : Colour.RED;
 	}
 
+	/**
+	 * This method is used to check whether the game has been finished or not
+	 * @return : returns true iff game is over and false otherwise
+	 */
 	private boolean isGameFinished()
 	{
 		for (int r = 0; r < Life.DEFAULT_ROW_SIZE; r++)
@@ -235,9 +266,22 @@ public class Life extends JApplet
 		return true;
 	}
 
+	/**
+	 * This method is used to get the grid for the current game
+	 * @return
+	 */
 	public Grid get_grid()
 	{
 		return grid;
+	}
+
+	/**
+	 * This method is used to set the number of turns
+	 * @param i
+	 */
+	public void set_turns(int i)
+	{
+		number_of_turns = i;
 	}
 
 }

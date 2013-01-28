@@ -25,54 +25,53 @@ import life.Life.Colour;
  * game of life
  * 
  * @author varun
- *
+ * 
  */
 public class Display
 {
 	/**
-	 * The following three fields MAX_SPEED, MIN_SPEED, DEFAULT_SPEED are
-	 * used for the speed slider.
+	 * The following three fields MAX_SPEED, MIN_SPEED, DEFAULT_SPEED are used
+	 * for the speed slider.
 	 */
 	private static final int MAX_SPEED = 10;
 	private static final int MIN_SPEED = 1;
 	private static final int DEFAULT_SPEED = 1;
 
 	/**
-	 * The field life_game is a reference to the game for which this display
-	 * is currently being used
+	 * The field life_game is a reference to the game for which this display is
+	 * currently being used
 	 */
 	private Life life_game;
-	
+
 	/**
 	 * The field turn_label is used to display the numbers of steps it has been
-	 * from the initial state. This is set to 0 once all cells on the grid are 
-	 * dead 
+	 * from the initial state. This is set to 0 once all cells on the grid are
+	 * dead
 	 */
 	private JLabel turn_label;
-	
+
 	/**
-	 * The field speed_slider is the slider used to adjust the speed of the 
-	 * run method
+	 * The field speed_slider is the slider used to adjust the speed of the run
+	 * method
 	 */
 	private JSlider speed_slider;
-	
+
 	/**
 	 * The field clear is the button used to clear the current grid
 	 */
 	private JButton clear;
-	
+
 	/**
-	 * The field step is the button used to perform one transition on the
-	 * grid
+	 * The field step is the button used to perform one transition on the grid
 	 */
 	private JButton step;
-	
+
 	/**
-	 * The field run is the button used to run the simulation for starting
-	 * from the initial state
+	 * The field run is the button used to run the simulation for starting from
+	 * the initial state
 	 */
 	private JButton run;
-	
+
 	/**
 	 * The saved_patterns is a drop-down menu which displays the patters user
 	 * can run
@@ -89,7 +88,8 @@ public class Display
 	 * The constructor initialises the current display with the game it is being
 	 * used for
 	 * 
-	 * @param life_game : specifies the game the display is being used for
+	 * @param life_game
+	 *            : specifies the game the display is being used for
 	 */
 	public Display(Life life_game)
 	{
@@ -124,12 +124,13 @@ public class Display
 	}
 
 	/**
-	 * This method initialises the speed_slider with the default values for 
-	 * the minimum, max and default speed
+	 * This method initialises the speed_slider with the default values for the
+	 * minimum, max and default speed
 	 */
 	private void initialise_speed_slider()
 	{
-		speed_slider = new JSlider(JSlider.VERTICAL, MIN_SPEED, MAX_SPEED, DEFAULT_SPEED);
+		speed_slider = new JSlider(JSlider.VERTICAL, MIN_SPEED, MAX_SPEED,
+				DEFAULT_SPEED);
 		speed_slider.setMajorTickSpacing(1);
 		speed_slider.setPaintTicks(true);
 		speed_slider.setPaintLabels(true);
@@ -141,7 +142,7 @@ public class Display
 				final JSlider source = (JSlider) event.getSource();
 				if (!source.getValueIsAdjusting())
 				{
-					Life.set_speed(2000 / (int) source.getValue());
+					Life.set_speed((int) source.getValue());
 				}
 			}
 		});
@@ -149,7 +150,9 @@ public class Display
 
 	/**
 	 * This method initialises the label to display the turns
-	 * @param header : specifies where to display the turn label
+	 * 
+	 * @param header
+	 *            : specifies where to display the turn label
 	 */
 	private void add_turn_label(JPanel header)
 	{
@@ -159,7 +162,9 @@ public class Display
 
 	/**
 	 * This method is used to update the text in the turns label
-	 * @param number_of_turns : specifies the number of turns to be displayed
+	 * 
+	 * @param number_of_turns
+	 *            : specifies the number of turns to be displayed
 	 */
 	public void update_turn_label(int number_of_turns)
 	{
@@ -167,10 +172,11 @@ public class Display
 	}
 
 	/**
-	 * This method is used to add the function buttons to the given panel.
-	 * This method also links up the button with a single instance of the
+	 * This method is used to add the function buttons to the given panel. This
+	 * method also links up the button with a single instance of the
 	 * 
-	 * @param buttons_footer : specifies the panel to add the buttons
+	 * @param buttons_footer
+	 *            : specifies the panel to add the buttons
 	 */
 	private void add_buttons_to_panel(JPanel buttons_footer)
 	{
@@ -210,14 +216,14 @@ public class Display
 	 * class
 	 * 
 	 * @author varun
-	 *
+	 * 
 	 */
 	private class ButtonListener implements ActionListener
 	{
 		/**
 		 * This function is called when any of the buttons on the applet are
-		 * clicked. The method uses the text from the button to perform
-		 * a specific action
+		 * clicked. The method uses the text from the button to perform a
+		 * specific action
 		 */
 		public void actionPerformed(final ActionEvent event)
 		{
@@ -242,18 +248,6 @@ public class Display
 	}
 
 	/**
-	 * This method disables all the controls while the game of life is running.
-	 */
-	@SuppressWarnings("deprecation")
-	public void disable_controls_for_running()
-	{
-		clear.disable();
-		step.disable();
-		life_game.get_grid().disable();
-		life_game.get_grid().disable();
-	}
-
-	/**
 	 * This method adds a drop down menu for the patterns which are saved
 	 * already.
 	 */
@@ -270,7 +264,7 @@ public class Display
 			{
 				/**
 				 * This method loads the pattern on the current grid. It loads
-				 * the file from the server on which this applet is currently 
+				 * the file from the server on which this applet is currently
 				 * being run.
 				 */
 				@Override
@@ -309,16 +303,18 @@ public class Display
 					{
 						exp.printStackTrace();
 					}
-
+					life_game.set_turns(0);
+					update_turn_label(0);
 				}
 
 				/**
-				 * This method maps a string to a colour. It is a helper method 
-				 * for loading the grid. The string passed in integer value of 
-				 * the ordinal value. 
+				 * This method maps a string to a colour. It is a helper method
+				 * for loading the grid. The string passed in integer value of
+				 * the ordinal value.
 				 * 
-				 * @param string : specifies the ordinal value as a string for 
-				 * the colour
+				 * @param string
+				 *            : specifies the ordinal value as a string for the
+				 *            colour
 				 * @return : returns a colour mapping for the given string
 				 */
 				private Colour map_string_to_colour(String string)
@@ -346,7 +342,8 @@ public class Display
 	}
 
 	/**
-	 * This method is used to set the text of the given 
+	 * This method is used to set the text of the given
+	 * 
 	 * @param text
 	 */
 	public void change_run_button(String text)
@@ -354,12 +351,31 @@ public class Display
 		run.setText(text);
 	}
 
+	/**
+	 * This method disables all the controls while the game of life is running.
+	 */
+	@SuppressWarnings("deprecation")
+	public void disable_controls_for_running()
+	{
+		change_run_button("Pause");
+		clear.disable();
+		step.disable();
+		saved_patterns.disable();
+		life_game.get_grid().disable();
+		life_game.get_grid().disable();
+	}
+	
+	/**
+	 * This method is used to enable the controls after the run has been
+	 * released
+	 */
 	@SuppressWarnings("deprecation")
 	public void enable_controls_after_running()
 	{
 		change_run_button("Run");
 		clear.enable();
 		life_game.get_grid().enable();
+		saved_patterns.enable();
 		step.enable();
 		life_game.get_grid().enable();
 	}
