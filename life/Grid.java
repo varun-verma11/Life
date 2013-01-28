@@ -2,14 +2,30 @@ package life;
 
 import javax.swing.JPanel;
 
+/**
+ * This class is used to represent grid which is JPanel object. This consists
+ * of all the cells for the grid.
+ * 
+ * @author varun
+ *
+ */
 public class Grid extends JPanel implements Cloneable
 {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * The field grid is used to store a 2-D representation of cells which are 
+	 * used to represent the grid.
+	 */
 	private Cell[][] grid = new Cell[Life.DEFAULT_ROW_SIZE][Life.DEFAULT_COLUMN_SIZE];
 
+	/**
+	 * The constructor initialises each of the cells in the grid field
+	 * with a new cell 
+	 */
 	public Grid()
 	{
 		for (int r = 0; r < Life.DEFAULT_ROW_SIZE; r++)
@@ -22,11 +38,22 @@ public class Grid extends JPanel implements Cloneable
 		}
 	}
 
+	/**
+	 * This method is used to get a cell at certain position in the grid
+	 * 
+	 * @param r : specifies the row 
+	 * @param c : specifies the column
+	 * @return  : returns a reference to the cell at given position
+	 */
 	public Cell getCellAtPosition(int r, int c)
 	{
 		return grid[r][c];
 	}
 
+	/**
+	 * This method is used to obtain a clone of the current grid. The method
+	 * performs a deep clone.
+	 */
 	@Override
 	public Grid clone()
 	{
@@ -43,6 +70,10 @@ public class Grid extends JPanel implements Cloneable
 		return game;
 	}
 
+	/**
+	 * This method is used to obtain the string representation of the current 
+	 * grid
+	 */
 	@Override
 	public String toString()
 	{

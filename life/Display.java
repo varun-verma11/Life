@@ -20,33 +20,91 @@ import javax.swing.event.ChangeListener;
 
 import life.Life.Colour;
 
+/**
+ * The Display class deals with all GUI interaction and setting up GUI for the
+ * game of life
+ * 
+ * @author varun
+ *
+ */
 public class Display
 {
+	/**
+	 * The following three fields MAX_SPEED, MIN_SPEED, DEFAULT_SPEED are
+	 * used for the speed slider.
+	 */
 	private static final int MAX_SPEED = 10;
 	private static final int MIN_SPEED = 0;
 	private static final int DEFAULT_SPEED = 0;
 
+	/**
+	 * The field life_game is a reference to the game for which this display
+	 * is currently being used
+	 */
 	private Life life_game;
+	
+	/**
+	 * The field turn_label is used to display the numbers of steps it has been
+	 * from the initial state. This is set to 0 once all cells on the grid are 
+	 * dead 
+	 */
 	private JLabel turn_label;
+	
+	/**
+	 * The field speed_slider is the slider used to adjust the speed of the 
+	 * run method
+	 */
 	private JSlider speed_slider;
+	
+	/**
+	 * The field clear is the button used to clear the current grid
+	 */
 	private JButton clear;
+	
+	/**
+	 * The field step is the button used to perform one transition on the
+	 * grid
+	 */
 	private JButton step;
+	
+	/**
+	 * The field run is the button used to run the simulation for starting
+	 * from the initial state
+	 */
 	private JButton run;
+	
+	/**
+	 * The saved_patterns is a drop-down menu which displays the patters user
+	 * can run
+	 */
 	private JComboBox<String> saved_patterns;
 
+	/**
+	 * The field patters_name is an array of patterns which are currently saved
+	 * on the server and user can select one of these.
+	 */
 	private String[] patterns_name = {};
 
+	/**
+	 * The constructor initialises the current display with the game it is being
+	 * used for
+	 * 
+	 * @param life_game : specifies the game the display is being used for
+	 */
 	public Display(Life life_game)
 	{
 		this.life_game = life_game;
 
 	}
 
+	/**
+	 * This method uses helper methods to initialises the display. i.e links all
+	 * the objects on the GUI with there ActionListeners
+	 */
 	public void initialise_display()
 	{
-		life_game.getContentPane().add(
-				initialise_speed_slider(MIN_SPEED, MAX_SPEED, DEFAULT_SPEED),
-				BorderLayout.EAST);
+		initialise_speed_slider();
+		life_game.getContentPane().add(speed_slider, BorderLayout.EAST);
 		life_game.getContentPane().add(life_game.get_grid(),
 				BorderLayout.CENTER);
 
@@ -65,29 +123,57 @@ public class Display
 		life_game.getContentPane().add(buttons_footer, BorderLayout.SOUTH);
 	}
 
-	public JSlider initialise_speed_slider(int min, int max, int def)
+	/**
+	 * This method initialises the speed_slider with the default values for 
+	 * the minimum, max and default speed
+	 */
+	private void initialise_speed_slider()
 	{
-		speed_slider = new JSlider(JSlider.VERTICAL, min, max, def);
+		speed_slider = new JSlider(JSlider.VERTICAL, MIN_SPEED, MAX_SPEED, DEFAULT_SPEED);
 		speed_slider.setMajorTickSpacing(2);
 		speed_slider.setMinorTickSpacing(1);
 		speed_slider.setPaintTicks(true);
 		speed_slider.setPaintLabels(true);
-		speed_slider.addChangeListener(new ChangeValue());
-		return speed_slider;
+		speed_slider.addChangeListener(new ChangeListener()
+		{
+			@Override
+			public void stateChanged(ChangeEvent event)
+			{
+				final JSlider source = (JSlider) event.getSource();
+				if (!source.getValueIsAdjusting())
+				{
+					Life.set_speed(2000 / (int) source.getValue());
+				}
+			}
+		});
 	}
 
-	public void add_turn_label(JPanel header)
+	/**
+	 * This method initialises the label to display the turns
+	 * @param header : specifies where to display the turn label
+	 */
+	private void add_turn_label(JPanel header)
 	{
 		turn_label = new JLabel("Turns: 0");
 		header.add(turn_label, BorderLayout.WEST);
 	}
 
+	/**
+	 * This method is used to update the text in the turns label
+	 * @param number_of_turns : specifies the number of turns to be displayed
+	 */
 	public void update_turn_label(int number_of_turns)
 	{
 		turn_label.setText("Turns: " + number_of_turns);
 	}
 
-	public void add_buttons_to_panel(JPanel buttons_footer)
+	/**
+	 * This method is used to add the function buttons to the given panel.
+	 * This method also links up the button with a single instance of the
+	 * 
+	 * @param buttons_footer : specifies the panel to add the buttons
+	 */
+	private void add_buttons_to_panel(JPanel buttons_footer)
 	{
 		clear = new JButton("Clear");
 		step = new JButton("Step");
@@ -111,19 +197,6 @@ public class Display
 	public void enable_slider()
 	{
 		speed_slider.enable();
-	}
-
-	private class ChangeValue implements ChangeListener
-	{
-
-		public void stateChanged(final ChangeEvent expn)
-		{
-			final JSlider source = (JSlider) expn.getSource();
-			if (!source.getValueIsAdjusting())
-			{
-				Life.set_speed(2000 / (int) source.getValue());
-			}
-		}
 	}
 
 	private class ButtonListener implements ActionListener
